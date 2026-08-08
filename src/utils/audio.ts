@@ -4,11 +4,11 @@
  * không bị rò rỉ ra ngoài module scope dưới dạng biến 'let' toàn cục.
  */
 const createSoundEngine = () => {
-  let ctx: AudioContext | null = null;
-  let isMuted: boolean = false;
-  let bgOscillator: OscillatorNode | null = null;
-  let bgGain: GainNode | null = null;
-  let isBgPlaying: boolean = false;
+  let ctx: AudioContext | null = null; // Instance duy nhất của AudioContext (môi trường xử lý âm thanh chính của Web Audio API)
+  let isMuted: boolean = false; // Theo dõi trạng thái bật/tắt âm thanh của SoundEngine
+  let bgOscillator: OscillatorNode | null = null; //  Node nguồn phát sóng âm riêng cho nhạc nền (Background Music). OscillatorNode dùng để tạo âm thanh cho nhạc nền
+  let bgGain: GainNode | null = null; //  Node điều chỉnh volume cho nhạc nền (Background Music)
+  let isBgPlaying: boolean = false; // Theo dõi xem nhạc nền có đang chạy hay không để tránh bật đè lên nhau
 
   const initCtx = (): AudioContext | null => {
     if (!ctx) {

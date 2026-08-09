@@ -77,13 +77,13 @@ const createSoundEngine = () => {
     // - oscillator tạo ra khoảng frequency dao động/giây
     //   + frequency xác định số chu kỳ dao động mỗi giây, đơn vị là Hz
     //   + Quan trọng đây không phải một bài nhạc hoàn chỉnh. Nó chỉ là một tone liên tục
-    //   + Ví dụ: 440 Hz nghĩa là waveform hoàn thành 440 chu kỳ mỗi giây.
+    //   + Ví dụ: 440 Hz nghĩa là waveform hoàn thành 440 chu kỳ mỗi giây
     osc.type = type;
     osc.frequency.setValueAtTime(frequency, startTime);
 
     // Nếu có endFrequency, thay đổi tần số tuyến tính trong suốt duration
     if (endFrequency !== undefined) {
-      // Ví dụ: bắt đầu ở 180 Hz và giảm dần xuống 110 Hz còn 110 Hz trong duration. Đây chính là hiệu ứng "rơi tone"
+      // Ví dụ: bắt đầu ở 180 Hz và giảm dần xuống còn 110 Hz trong duration. Đây chính là hiệu ứng "rơi tone"
       osc.frequency.linearRampToValueAtTime(
         endFrequency,
         startTime + duration,
@@ -105,7 +105,7 @@ const createSoundEngine = () => {
     // audioCtx.destination chính là audio output cuối cùng, thường là speaker/headphone của người dùng
     gain.connect(audioCtx.destination);
 
-    // Bắt đầu và kết thúc oscillator theo thời gian đã định.
+    // Bắt đầu và kết thúc oscillator theo thời gian đã định
     osc.start(startTime);
     osc.stop(startTime + duration);
   };

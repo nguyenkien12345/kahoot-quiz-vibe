@@ -80,15 +80,36 @@ const createSoundEngine = () => {
 
     // Nếu có endFrequency, thay đổi tần số tuyến tính trong suốt duration
     if (endFrequency !== undefined) {
+      // VD: 1000 Hz ───────────────────────────→ 500 Hz
+      //                       1 giây
+
       if (rampType === "exponential") {
+        // 1000
+        //  ↓
+        //  ~841
+        //  ↓
+        //  ~707
+        //  ↓
+        //  ~595
+        //  ↓
+        //  500
+
+        // Exponential thay đổi theo tỷ lệ, lúc đầu nhanh/chậm tùy hướng rồi thay đổi dần. Nó tạo ra một đường cong thay vì đường thẳng
         osc.frequency.exponentialRampToValueAtTime(
           endFrequency,
           startTime + duration,
         );
       }
 
-      // Ví dụ: bắt đầu ở 180 Hz và giảm dần xuống còn 110 Hz trong duration. Đây chính là hiệu ứng "rơi tone"
       if (rampType === "linear") {
+        // Thời gian	Frequency
+        // 0s     	  1000 Hz
+        // 0.25s	    875 Hz
+        // 0.5s	      750 Hz
+        // 0.75s	    625 Hz
+        // 1s     	  500 Hz
+
+        // Linear nghĩa là mỗi khoảng thời gian tăng/giảm cùng một lượng Hz (Nó giống như đi lên/xuống một cái cầu thang đều đều.)
         osc.frequency.linearRampToValueAtTime(
           endFrequency,
           startTime + duration,

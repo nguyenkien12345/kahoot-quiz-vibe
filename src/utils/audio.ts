@@ -17,7 +17,17 @@ const createSoundEngine = () => {
         (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       ctx = new AudioCtx();
     }
+
+    // "suspended":	AudioContext đang tạm dừng, không xử lý/phát âm thanh
+    // "running":	AudioContext đang hoạt động bình thường
+    // "closed":	AudioContext đã đóng hoàn toàn, không thể tiếp tục sử dụng
     if (ctx && ctx.state === "suspended") {
+      // Browser có thể không cho phép Web Audio phát âm thanh ngay khi trang vừa load nếu chưa có interaction của người dùng
+
+      // Xử lý Autoplay Policy:
+      // Trình duyệt có thể tạm dừng AudioContext để ngăn âm thanh tự động phát
+      // Gọi resume() để tiếp tục AudioContext, đặc biệt khi hàm này được gọi
+      // trong ngữ cảnh có user gesture (ví dụ: click hoặc interaction của người dùng)
       ctx.resume();
     }
     return ctx;
@@ -26,17 +36,31 @@ const createSoundEngine = () => {
   const stopBgMusic = () => {
     if (bgOscillator) {
       try {
+        // Dừng OscillatorNode đang phát nhạc nền
         bgOscillator.stop();
+
+        // Ngắt OscillatorNode khỏi Audio Graph để cleanup resource
         bgOscillator.disconnect();
-      } catch { }
+      } catch {
+        // Bỏ qua lỗi nếu OscillatorNode đã được stop hoặc disconnect trước đó
+      }
+
+      // Xóa reference đến OscillatorNode đã dừng.
+      // Cho phép startBgMusic() tạo một OscillatorNode mới khi cần
       bgOscillator = null;
     }
+
+    // Cập nhật trạng thái: background music hiện không còn phát
     isBgPlaying = false;
   };
 
   return {
     setMuted: (muted: boolean) => {
+      // 1. Lưu trạng thái mute mới
       isMuted = muted;
+
+      // 2. Nếu vừa mute trong lúc nhạc nền đang chạy,
+      //    thì dừng nhạc nền ngay lập tức
       if (muted && isBgPlaying) {
         stopBgMusic();
       }
@@ -176,25 +200,43 @@ const createSoundEngine = () => {
     },
 
     startBgMusic: () => {
+      // Không phát nhạc nếu đang mute hoặc background music đã chạy
       if (isMuted || isBgPlaying) return;
+
       try {
+        // Khởi tạo hoặc lấy AudioContext hiện tại
         const audioCtx = initCtx();
         if (!audioCtx) return;
 
+        // Oscillator có nhiệm vụ tạo ra waveform liên tục (tạo sóng âm)
+        // Gain dùng để điều chỉnh mức âm lượng/amplitude (biên độ).
+
+        // Tạo nguồn âm thanh và node điều chỉnh âm lượng cho nhạc nền
         bgOscillator = audioCtx.createOscillator();
         bgGain = audioCtx.createGain();
 
+        // - Tạo âm thanh nền dạng sine wave với tần số 220 Hz
+        // - sine: Âm thanh tương đối mềm, đơn giản
+        // - oscillator tạo ra khoảng 220 dao động/giây (trầm) (220 Hz tương ứng với nốt A3 trong hệ thống tuning chuẩn). Quan trọng đây không phải một bài nhạc hoàn chỉnh. Nó chỉ là một tone liên tục
         bgOscillator.type = "sine";
         bgOscillator.frequency.setValueAtTime(220, audioCtx.currentTime);
 
+        // Đặt âm lượng nhạc nền ở mức rất thấp để không lấn át sound effects
+        // 0.03 là mức gain khá thấp, khoảng 3% theo giá trị gain tuyến tính
         bgGain.gain.setValueAtTime(0.03, audioCtx.currentTime);
 
+        // Xây dựng Audio Graph: Oscillator → Gain → Speaker (Oscillator tạo âm thanh và truyền tín hiệu sang GainNode)
         bgOscillator.connect(bgGain);
+
+        // audioCtx.destination chính là audio output cuối cùng, thường là speaker/headphone của người dùng
         bgGain.connect(audioCtx.destination);
 
+        // Bắt đầu phát nhạc nền và cập nhật trạng thái
         bgOscillator.start();
         isBgPlaying = true;
-      } catch { }
+      } catch {
+        // Bỏ qua lỗi nếu trình duyệt không thể khởi tạo hoặc phát âm thanh
+      }
     },
 
     stopBgMusic

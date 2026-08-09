@@ -33,6 +33,70 @@ const createSoundEngine = () => {
     return ctx;
   };
 
+  const withAudioContext = (
+    callback: (audioCtx: AudioContext) => void,
+  ) => {
+    if (isMuted) return;
+
+    try {
+      const audioCtx = initCtx();
+      if (!audioCtx) return;
+
+      callback(audioCtx);
+    } catch {
+      // Ignore audio playback errors.
+    }
+  };
+
+  const playTone = (
+    audioCtx: AudioContext,
+    {
+      type,
+      frequency,
+      startTime,
+      duration,
+      volume,
+      endFrequency,
+    }: {
+      type: OscillatorType;
+      frequency: number;
+      startTime: number;
+      duration: number;
+      volume: number;
+      endFrequency?: number;
+    },
+  ) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    // Cấu hình waveform và tần số ban đầu.
+    osc.type = type;
+    osc.frequency.setValueAtTime(frequency, startTime);
+
+    // Nếu có endFrequency, thay đổi tần số tuyến tính trong suốt duration.
+    if (endFrequency !== undefined) {
+      osc.frequency.linearRampToValueAtTime(
+        endFrequency,
+        startTime + duration,
+      );
+    }
+
+    // Thiết lập volume và fade out.
+    gain.gain.setValueAtTime(volume, startTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      startTime + duration,
+    );
+
+    // Xây dựng Audio Graph: Oscillator → Gain → Speaker.
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    // Bắt đầu và kết thúc oscillator theo thời gian đã định.
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  };
+
   const stopBgMusic = () => {
     if (bgOscillator) {
       try {
@@ -116,53 +180,33 @@ const createSoundEngine = () => {
     },
 
     playCorrect: () => {
-      if (isMuted) return;
-      try {
-        const audioCtx = initCtx();
-        if (!audioCtx) return;
-
+      withAudioContext((audioCtx) => {
         const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
-        notes.forEach((freq, idx) => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
+        const startTime = audioCtx.currentTime;
 
-          osc.type = "triangle";
-          osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.08);
-
-          gain.gain.setValueAtTime(0.25, audioCtx.currentTime + idx * 0.08);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.08 + 0.3);
-
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-
-          osc.start(audioCtx.currentTime + idx * 0.08);
-          osc.stop(audioCtx.currentTime + idx * 0.08 + 0.3);
+        notes.forEach((frequency, idx) => {
+          playTone(audioCtx, {
+            type: "triangle",
+            frequency,
+            startTime: startTime + idx * 0.08,
+            duration: 0.3,
+            volume: 0.25,
+          });
         });
-      } catch { }
+      });
     },
 
     playWrong: () => {
-      if (isMuted) return;
-      try {
-        const audioCtx = initCtx();
-        if (!audioCtx) return;
-
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(180, audioCtx.currentTime);
-        osc.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.35);
-
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.35);
-      } catch { }
+      withAudioContext((audioCtx) => {
+        playTone(audioCtx, {
+          type: "sawtooth",
+          frequency: 180,
+          startTime: audioCtx.currentTime,
+          duration: 0.35,
+          volume: 0.3,
+          endFrequency: 110,
+        });
+      });
     },
 
     playFanfare: () => {

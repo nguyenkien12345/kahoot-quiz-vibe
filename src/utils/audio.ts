@@ -1,8 +1,3 @@
-/**
- * Factory function tạo ra SoundEngine với closure encapsulation.
- * Giúp đóng gói hoàn toàn state nội bộ (ctx, isMuted, bgOscillator,...)
- * không bị rò rỉ ra ngoài module scope dưới dạng biến 'let' toàn cục.
- */
 const createSoundEngine = () => {
   let ctx: AudioContext | null = null; // Instance duy nhất của AudioContext (môi trường xử lý âm thanh chính của Web Audio API)
   let isMuted: boolean = false; // Theo dõi trạng thái bật/tắt âm thanh của SoundEngine
@@ -57,6 +52,7 @@ const createSoundEngine = () => {
       duration,
       volume,
       endFrequency,
+      rampType = "linear",
     }: {
       type: OscillatorType; // Waveform
       frequency: number; // Tần số (đơn vị Hz)
@@ -64,6 +60,7 @@ const createSoundEngine = () => {
       duration: number; // Kéo dài bao lâu (Thời gian tone tồn tại ví dụ tone kéo dài 300ms)
       volume: number; // Âm lượng (Mức gain ban đầu. Ví dụ volume: 0.25 → GainNode bắt đầu ở mức 0.25)
       endFrequency?: number; // Tần số kết thúc (nếu có thì thay đổi tuyến tính trong suốt duration)
+      rampType?: "linear" | "exponential";
     },
   ) => {
     // Oscillator có nhiệm vụ tạo ra waveform liên tục (tạo sóng âm) (tín hiệu âm thanh)
@@ -83,11 +80,20 @@ const createSoundEngine = () => {
 
     // Nếu có endFrequency, thay đổi tần số tuyến tính trong suốt duration
     if (endFrequency !== undefined) {
+      if (rampType === "exponential") {
+        osc.frequency.exponentialRampToValueAtTime(
+          endFrequency,
+          startTime + duration,
+        );
+      }
+
       // Ví dụ: bắt đầu ở 180 Hz và giảm dần xuống còn 110 Hz trong duration. Đây chính là hiệu ứng "rơi tone"
-      osc.frequency.linearRampToValueAtTime(
-        endFrequency,
-        startTime + duration,
-      );
+      if (rampType === "linear") {
+        osc.frequency.linearRampToValueAtTime(
+          endFrequency,
+          startTime + duration,
+        );
+      }
     }
 
     // Thiết lập mức gain ban đầu cho tone
@@ -144,52 +150,29 @@ const createSoundEngine = () => {
     },
 
     playTick: () => {
-      if (isMuted) return;
-      try {
-        const audioCtx = initCtx();
-        if (!audioCtx) return;
-
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.05);
-
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.05);
-      } catch {
-        // Audio context policy blocked or not supported
-      }
+      withAudioContext((audioCtx) => {
+        playTone(audioCtx, {
+          type: "sine",
+          frequency: 800,
+          startTime: audioCtx.currentTime,
+          duration: 0.05,
+          volume: 0.15,
+          endFrequency: 400,
+          rampType: "exponential"
+        });
+      });
     },
 
     playWarningTick: () => {
-      if (isMuted) return;
-      try {
-        const audioCtx = initCtx();
-        if (!audioCtx) return;
-
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = "square";
-        osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
-
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.08);
-      } catch { }
+      withAudioContext((audioCtx) => {
+        playTone(audioCtx, {
+          type: "square",
+          frequency: 1000,
+          startTime: audioCtx.currentTime,
+          duration: 0.08,
+          volume: 0.2,
+        });
+      });
     },
 
     playCorrect: () => {
@@ -223,11 +206,7 @@ const createSoundEngine = () => {
     },
 
     playFanfare: () => {
-      if (isMuted) return;
-      try {
-        const audioCtx = initCtx();
-        if (!audioCtx) return;
-
+      withAudioContext((audioCtx) => {
         const arpeggiated = [
           { f: 523.25, t: 0 },
           { f: 659.25, t: 0.12 },
@@ -236,24 +215,18 @@ const createSoundEngine = () => {
           { f: 880.0, t: 0.5 },
           { f: 1046.5, t: 0.65 }
         ];
+        const startTime = audioCtx.currentTime;
 
         arpeggiated.forEach((note) => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-
-          osc.type = "triangle";
-          osc.frequency.setValueAtTime(note.f, audioCtx.currentTime + note.t);
-
-          gain.gain.setValueAtTime(0.2, audioCtx.currentTime + note.t);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + note.t + 0.4);
-
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-
-          osc.start(audioCtx.currentTime + note.t);
-          osc.stop(audioCtx.currentTime + note.t + 0.4);
+          playTone(audioCtx, {
+            type: "triangle",
+            frequency: note.f,
+            startTime: startTime + note.t,
+            duration: 0.4,
+            volume: 0.2,
+          });
         });
-      } catch { }
+      });
     },
 
     startBgMusic: () => {
@@ -261,20 +234,14 @@ const createSoundEngine = () => {
       if (isMuted || isBgPlaying) return;
 
       try {
-        // Khởi tạo hoặc lấy AudioContext hiện tại
         const audioCtx = initCtx();
         if (!audioCtx) return;
 
-        // Oscillator có nhiệm vụ tạo ra waveform liên tục (tạo sóng âm)
-        // Gain dùng để điều chỉnh mức âm lượng/amplitude (biên độ).
-
-        // Tạo nguồn âm thanh và node điều chỉnh âm lượng cho nhạc nền
         bgOscillator = audioCtx.createOscillator();
         bgGain = audioCtx.createGain();
 
-        // - Tạo âm thanh nền dạng sine wave với tần số 220 Hz
         // - sine: Âm thanh tương đối mềm, đơn giản
-        // - oscillator tạo ra khoảng 220 dao động/giây (trầm) (220 Hz tương ứng với nốt A3 trong hệ thống tuning chuẩn). Quan trọng đây không phải một bài nhạc hoàn chỉnh. Nó chỉ là một tone liên tục
+        // - 220 dao động/giây (trầm) (220 Hz tương ứng với nốt A3 trong hệ thống tuning chuẩn)
         bgOscillator.type = "sine";
         bgOscillator.frequency.setValueAtTime(220, audioCtx.currentTime);
 
@@ -282,18 +249,14 @@ const createSoundEngine = () => {
         // 0.03 là mức gain khá thấp, khoảng 3% theo giá trị gain tuyến tính
         bgGain.gain.setValueAtTime(0.03, audioCtx.currentTime);
 
-        // Xây dựng Audio Graph: Oscillator → Gain → Speaker (Oscillator tạo âm thanh và truyền tín hiệu sang GainNode)
         bgOscillator.connect(bgGain);
 
-        // audioCtx.destination chính là audio output cuối cùng, thường là speaker/headphone của người dùng
         bgGain.connect(audioCtx.destination);
 
         // Bắt đầu phát nhạc nền và cập nhật trạng thái
         bgOscillator.start();
         isBgPlaying = true;
-      } catch {
-        // Bỏ qua lỗi nếu trình duyệt không thể khởi tạo hoặc phát âm thanh
-      }
+      } catch { }
     },
 
     stopBgMusic

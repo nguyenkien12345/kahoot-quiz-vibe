@@ -58,38 +58,51 @@ const createSoundEngine = () => {
       volume,
       endFrequency,
     }: {
-      type: OscillatorType;
-      frequency: number;
-      startTime: number;
-      duration: number;
-      volume: number;
-      endFrequency?: number;
+      type: OscillatorType; // Waveform
+      frequency: number; // Tần số (đơn vị Hz)
+      startTime: number; // Bắt đầu lúc nào (Nó không phải "sau bao nhiêu milliseconds" mà nó là thời điểm tuyệt đối trên AudioContext timeline)
+      duration: number; // Kéo dài bao lâu (Thời gian tone tồn tại ví dụ tone kéo dài 300ms)
+      volume: number; // Âm lượng (Mức gain ban đầu. Ví dụ volume: 0.25 → GainNode bắt đầu ở mức 0.25)
+      endFrequency?: number; // Tần số kết thúc (nếu có thì thay đổi tuyến tính trong suốt duration)
     },
   ) => {
+    // Oscillator có nhiệm vụ tạo ra waveform liên tục (tạo sóng âm) (tín hiệu âm thanh)
+    // Gain dùng để điều chỉnh mức âm lượng/amplitude (biên độ) của tín hiệu, từ đó kiểm soát mức âm thanh
+
+    // Tạo nguồn phát sóng âm (Oscillator) và node điều chỉnh âm lượng (Gain)
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
 
-    // Cấu hình waveform và tần số ban đầu.
+    // - Đặt dạng sóng (waveform) và tần số ban đầu (frequency Hz)
+    // - oscillator tạo ra khoảng frequency dao động/giây
+    //   + frequency xác định số chu kỳ dao động mỗi giây, đơn vị là Hz
+    //   + Quan trọng đây không phải một bài nhạc hoàn chỉnh. Nó chỉ là một tone liên tục
+    //   + Ví dụ: 440 Hz nghĩa là waveform hoàn thành 440 chu kỳ mỗi giây.
     osc.type = type;
     osc.frequency.setValueAtTime(frequency, startTime);
 
-    // Nếu có endFrequency, thay đổi tần số tuyến tính trong suốt duration.
+    // Nếu có endFrequency, thay đổi tần số tuyến tính trong suốt duration
     if (endFrequency !== undefined) {
+      // Ví dụ: bắt đầu ở 180 Hz và giảm dần xuống 110 Hz còn 110 Hz trong duration. Đây chính là hiệu ứng "rơi tone"
       osc.frequency.linearRampToValueAtTime(
         endFrequency,
         startTime + duration,
       );
     }
 
-    // Thiết lập volume và fade out.
+    // Thiết lập mức gain ban đầu cho tone
     gain.gain.setValueAtTime(volume, startTime);
+    // Fade out. Nếu bạn chỉ gọi osc.stop(); thì âm thanh có thể bị click/pop vì waveform bị cắt đột ngột
+    // Thay vào đó: 0.3 giảm dần xuống còn 0.001 → volume giảm dần trước khi oscillator stop
+    // 0.001 thay vì 0 cũng là chủ ý. Vì exponential ramp không thể ramp tới 0 theo cách thông thường
     gain.gain.exponentialRampToValueAtTime(
       0.001,
       startTime + duration,
     );
 
-    // Xây dựng Audio Graph: Oscillator → Gain → Speaker.
+    // Xây dựng Audio Graph: Oscillator → Gain → Speaker (Oscillator tạo âm thanh và truyền tín hiệu sang GainNode)
     osc.connect(gain);
+    // audioCtx.destination chính là audio output cuối cùng, thường là speaker/headphone của người dùng
     gain.connect(audioCtx.destination);
 
     // Bắt đầu và kết thúc oscillator theo thời gian đã định.

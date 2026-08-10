@@ -1,6 +1,8 @@
 import React from "react";
 import { Play, Sparkles, Trophy, Users, Zap, Shield, HelpCircle, Layers, Settings, Music, Volume2, VolumeX } from "lucide-react";
 import { QuizData, GameMode, GameSettings } from "../../types";
+import { CONFIG_MODE_GAME } from "@/src/constants";
+import { GameMode as GameModeComponent } from "../common/GameMode";
 
 interface GameLobbyProps {
   quiz: QuizData;
@@ -82,113 +84,41 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Solo Mode */}
-          <div
-            onClick={() => onStartGame("SOLO")}
-            className="group relative bg-slate-900 border-2 border-slate-800 hover:border-purple-500/80 rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-purple-900/20 flex flex-col justify-between"
-          >
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
-                  <Zap className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                  Phổ biến
-                </span>
-              </div>
-              <h4 className="font-extrabold text-white text-base group-hover:text-purple-300 transition-colors">
-                Cá Nhân Thử Thách
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Tự làm bài với đồng hồ tính giờ bấm giờ kịch tính, tính chuỗi điểm Streak & nhân điểm thưởng!
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-purple-400 group-hover:text-purple-300">
-              <span>Bắt đầu ngay</span>
-              <Play className="w-4 h-4 fill-current group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Host / Presentation Mode */}
-          <div
-            onClick={() => onStartGame("HOST")}
-            className="group relative bg-slate-900 border-2 border-slate-800 hover:border-pink-500/80 rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-pink-900/20 flex flex-col justify-between"
-          >
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/30 text-pink-400 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
-                  <Users className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
-                  Lớp học / Host
-                </span>
-              </div>
-              <h4 className="font-extrabold text-white text-base group-hover:text-pink-300 transition-colors">
-                Trình Chiếu / Quản Trò (Host)
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Màn hình lớn chiếu câu hỏi dành cho Giáo viên / Host trình chiếu cho cả lớp cùng tham gia trả lời.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-pink-400 group-hover:text-pink-300">
-              <span>Mở màn hình Host</span>
-              <Play className="w-4 h-4 fill-current group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Speed Run Mode */}
-          <div
-            onClick={() => onStartGame("SPEED_RUN")}
-            className="group relative bg-slate-900 border-2 border-slate-800 hover:border-amber-500/80 rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-amber-900/20 flex flex-col justify-between"
-          >
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
-                  <Trophy className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  Tốc độ
-                </span>
-              </div>
-              <h4 className="font-extrabold text-white text-base group-hover:text-amber-300 transition-colors">
-                Speed Run (Siêu Tốc)
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Thời gian làm bài giảm một nửa (50%), nhân đôi số điểm thưởng phản xạ siêu nhanh!
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-amber-400 group-hover:text-amber-300">
-              <span>Thử thách tốc độ</span>
-              <Play className="w-4 h-4 fill-current group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Practice Mode */}
-          <div
-            onClick={() => onStartGame("PRACTICE")}
-            className="group relative bg-slate-900 border-2 border-slate-800 hover:border-emerald-500/80 rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-emerald-900/20 flex flex-col justify-between"
-          >
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
-                  <Shield className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  Thư giãn
-                </span>
-              </div>
-              <h4 className="font-extrabold text-white text-base group-hover:text-emerald-300 transition-colors">
-                Chế Độ Luyện Tập (Không Áp Lực)
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Không giới hạn thời gian đếm ngược, luôn xem gợi ý & giải thích đáp án chi tiết.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-emerald-400 group-hover:text-emerald-300">
-              <span>Luyện tập ngay</span>
-              <Play className="w-4 h-4 fill-current group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
+          {
+            CONFIG_MODE_GAME.map((item) => {
+              const {
+                classNameWrapperContainer,
+                classNameWrapperIcon,
+                icon,
+                classNameWrapperText,
+                text,
+                classNameWrapperTitle,
+                title,
+                description,
+                classNameWrapperActions,
+                textAction,
+                iconAction,
+                mode
+              } = item ?? {};
+              return (
+                <GameModeComponent
+                  key={item.id}
+                  classNameWrapperContainer={classNameWrapperContainer}
+                  classNameWrapperIcon={classNameWrapperIcon}
+                  icon={icon}
+                  classNameWrapperText={classNameWrapperText}
+                  text={text}
+                  classNameWrapperTitle={classNameWrapperTitle}
+                  title={title}
+                  description={description}
+                  classNameWrapperActions={classNameWrapperActions}
+                  textAction={textAction}
+                  iconAction={iconAction}
+                  onClick={() => onStartGame(mode)}
+                />
+              )
+            })
+          }
         </div>
       </div>
 

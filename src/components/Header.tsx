@@ -1,6 +1,6 @@
 import React from "react";
-import { Sparkles, FileJson, Volume2, VolumeX, Edit3, Play, Trophy } from "lucide-react";
-import { QuizData } from "../types";
+import { Sparkles, FileJson, Volume2, VolumeX, Edit3, Play } from "lucide-react";
+import { QuizData, ViewMode } from "../types";
 
 interface HeaderProps {
   currentQuiz: QuizData;
@@ -10,7 +10,7 @@ interface HeaderProps {
   onOpenAiModal: () => void;
   onOpenEditor: () => void;
   onResetGame: () => void;
-  viewMode: "LOBBY" | "PLAYING" | "RESULT" | "EDITOR" | "HOST";
+  viewMode: ViewMode;
 }
 
 export const Header: React.FC<HeaderProps> = ({

@@ -9,14 +9,14 @@ import { QuestionResult } from "./components/Game/QuestionResult";
 import { GameHostView } from "./components/Game/GameHostView";
 import { GameSummary } from "./components/Game/GameSummary";
 
-import { QuizData, OptionId, GameMode, GameSettings, UserAnswer } from "./types";
+import { QuizData, OptionId, GameMode, GameSettings, UserAnswer, ViewMode } from "./types";
 import { SAMPLE_QUIZZES } from "./constants/samples";
 import { formatJsonString } from "./utils/jsonValidator";
 import { sound } from "./utils/audio";
 
 export default function App() {
   const [quizData, setQuizData] = useState<QuizData>(SAMPLE_QUIZZES[0].data);
-  const [viewMode, setViewMode] = useState<"LOBBY" | "PLAYING" | "RESULT" | "EDITOR" | "HOST" | "SUMMARY">("LOBBY");
+  const [viewMode, setViewMode] = useState<ViewMode>("LOBBY");
   
   // Game Play State
   const [gameMode, setGameMode] = useState<GameMode>("SOLO");

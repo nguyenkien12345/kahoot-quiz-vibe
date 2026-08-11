@@ -1,9 +1,9 @@
+import Badge from "@/src/components/common/Badge";
+import GameModeBlock from "@/src/components/Game/GameLobby/GameModeBlock";
 import { CONFIG_DIFFICULTY_LEVEL, CONFIG_MODE_GAME } from "@/src/constants";
+import { GameMode, GameSettings, QuizData } from "@/src/types";
 import { Layers, Music, Sparkles, Volume2, VolumeX } from "lucide-react";
 import React from "react";
-import { GameMode, GameSettings, QuizData } from "../../types";
-import Badge from "../common/Badge";
-import GameModeBlock from "../common/GameModeBlock";
 
 interface GameLobbyProps {
   quiz: QuizData;

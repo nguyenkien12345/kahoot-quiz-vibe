@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { Header } from "./components/Header";
-import { JsonImportModal } from "./components/JsonImportModal";
+import { GameLobby } from "@/src/components/Game/GameLobby/index";
+import { useEffect, useState } from "react";
 import { AiGeneratorModal } from "./components/AiGeneratorModal";
-import { QuizEditor } from "./components/QuizEditor";
-import { GameLobby } from "./components/Game/GameLobby";
-import { QuestionCard } from "./components/Game/QuestionCard";
-import { QuestionResult } from "./components/Game/QuestionResult";
 import { GameHostView } from "./components/Game/GameHostView";
 import { GameSummary } from "./components/Game/GameSummary";
+import { QuestionCard } from "./components/Game/QuestionCard";
+import { QuestionResult } from "./components/Game/QuestionResult";
+import { Header } from "./components/Header";
+import { JsonImportModal } from "./components/JsonImportModal";
+import { QuizEditor } from "./components/QuizEditor";
 
-import { QuizData, OptionId, GameMode, GameSettings, UserAnswer, ViewMode } from "./types";
 import { SAMPLE_QUIZZES } from "./constants/samples";
-import { formatJsonString } from "./utils/jsonValidator";
+import { GameMode, GameSettings, OptionId, QuizData, UserAnswer, ViewMode } from "./types";
 import { sound } from "./utils/audio";
+import { formatJsonString } from "./utils/jsonValidator";
 
 export default function App() {
   const [quizData, setQuizData] = useState<QuizData>(SAMPLE_QUIZZES[0].data);

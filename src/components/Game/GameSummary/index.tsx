@@ -1,7 +1,8 @@
+import { QuizData, UserAnswer } from "@/src/types";
+import { sound } from "@/src/utils/audio";
+import { CheckCircle2, Edit3, FileText, RefreshCw, Trophy, XCircle, Zap } from "lucide-react";
 import React, { useEffect } from "react";
-import { Trophy, RefreshCw, Edit3, Award, Flame, CheckCircle2, XCircle, Clock, Zap, FileText } from "lucide-react";
-import { QuizData, UserAnswer, OptionId } from "../../types";
-import { sound } from "../../utils/audio";
+import StatCard from "./StatCard";
 
 interface GameSummaryProps {
   quiz: QuizData;
@@ -71,31 +72,10 @@ export const GameSummary: React.FC<GameSummaryProps> = ({
 
       {/* Stats Cards Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center space-y-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Độ chính xác</span>
-          <div className="text-2xl font-black text-emerald-400 font-mono">{accuracyPct}%</div>
-          <span className="text-[11px] text-slate-500">
-            {correctCount}/{totalQuestions} câu đúng
-          </span>
-        </div>
-
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center space-y-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Chuỗi kỷ lục</span>
-          <div className="text-2xl font-black text-amber-400 font-mono">{maxStreak}x</div>
-          <span className="text-[11px] text-slate-500">Câu đúng liên tiếp</span>
-        </div>
-
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center space-y-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Thời gian TB</span>
-          <div className="text-2xl font-black text-blue-400 font-mono">{avgTime}s</div>
-          <span className="text-[11px] text-slate-500">Mỗi câu hỏi</span>
-        </div>
-
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center space-y-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Tổng điểm</span>
-          <div className="text-2xl font-black text-pink-400 font-mono">{totalScore}</div>
-          <span className="text-[11px] text-slate-500">Kahoot Points</span>
-        </div>
+        <StatCard title="Độ chính xác" classNamePoint="text-emerald-400" point={`${accuracyPct}%`} conclusion={`${correctCount}/${totalQuestions} câu đúng`} />
+        <StatCard title="Chuỗi kỷ lục" classNamePoint="text-amber-400" point={`${maxStreak}x`} conclusion="Câu đúng liên tiếp" />
+        <StatCard title="Thời gian TB" classNamePoint="text-blue-400" point={`${avgTime}s`} conclusion="Mỗi câu hỏi" />
+        <StatCard title="Tổng điểm" classNamePoint="text-pink-400" point={`${totalScore}`} conclusion="Kahoot Points" />
       </div>
 
       {/* Question Breakdown Review */}
@@ -116,11 +96,10 @@ export const GameSummary: React.FC<GameSummaryProps> = ({
             return (
               <div
                 key={q.id}
-                className={`p-4 rounded-xl border space-y-2 text-xs transition-all ${
-                  isCorrect
-                    ? "bg-emerald-950/20 border-emerald-500/40"
-                    : "bg-rose-950/20 border-rose-500/40"
-                }`}
+                className={`p-4 rounded-xl border space-y-2 text-xs transition-all ${isCorrect
+                  ? "bg-emerald-950/20 border-emerald-500/40"
+                  : "bg-rose-950/20 border-rose-500/40"
+                  }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2 font-bold text-white text-sm">

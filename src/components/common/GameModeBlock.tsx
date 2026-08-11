@@ -2,7 +2,7 @@ import { cn } from "@/src/lib/utils";
 import React from "react";
 import { LucideIcon } from "lucide-react";
 
-interface GameModeProps {
+interface GameModeBlockProps {
     classNameWrapperContainer?: string;
     classNameWrapperIcon?: string;
     classNameIcon?: string;
@@ -21,7 +21,7 @@ interface GameModeProps {
     onClick?: () => void;
 }
 
-export const GameMode: React.FC<GameModeProps> = ({
+const GameModeBlock: React.FC<GameModeBlockProps> = ({
     classNameWrapperContainer,
     classNameWrapperIcon,
     classNameIcon,
@@ -100,3 +100,5 @@ export const GameMode: React.FC<GameModeProps> = ({
         </div>
     )
 }
+
+export default GameModeBlock;

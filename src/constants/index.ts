@@ -88,3 +88,21 @@ export const CONFIG_MODE_GAME: ConfigModeGame[] = [
         mode: "PRACTICE"
     }
 ]
+
+export const CONFIG_DIFFICULTY_LEVEL = [
+    {
+        "label": "Dễ",
+        "value": "EASY",
+        "color": "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+    },
+    {
+        "label": "Trung bình",
+        "value": "MEDIUM",
+        "color": "bg-amber-500/20 text-amber-300 border-amber-500/30"
+    },
+    {
+        "label": "Khó",
+        "value": "HARD",
+        "color": "bg-rose-500/20 text-rose-300 border-rose-500/30"
+    }
+]

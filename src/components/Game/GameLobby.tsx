@@ -1,8 +1,9 @@
+import { CONFIG_DIFFICULTY_LEVEL, CONFIG_MODE_GAME } from "@/src/constants";
+import { Layers, Music, Sparkles, Volume2, VolumeX } from "lucide-react";
 import React from "react";
-import { Play, Sparkles, Trophy, Users, Zap, Shield, HelpCircle, Layers, Settings, Music, Volume2, VolumeX } from "lucide-react";
-import { QuizData, GameMode, GameSettings } from "../../types";
-import { CONFIG_MODE_GAME } from "@/src/constants";
-import { GameMode as GameModeComponent } from "../common/GameMode";
+import { GameMode, GameSettings, QuizData } from "../../types";
+import Badge from "../common/Badge";
+import GameModeBlock from "../common/GameModeBlock";
 
 interface GameLobbyProps {
   quiz: QuizData;
@@ -22,13 +23,15 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
   onOpenEditor
 }) => {
   const totalQuestions = quiz.questions.length;
-  const easyCount = quiz.questions.filter((q) => q.difficulty === "EASY").length;
-  const mediumCount = quiz.questions.filter((q) => q.difficulty === "MEDIUM" || !q.difficulty).length;
-  const hardCount = quiz.questions.filter((q) => q.difficulty === "HARD").length;
-
   const estTimeMin = Math.ceil(
     quiz.questions.reduce((acc, q) => acc + (q.time_limit_sec || 20), 0) / 60
   );
+
+  const countMap: Record<string, number> = {
+    EASY: quiz.questions.filter((q) => q.difficulty === "EASY").length,
+    MEDIUM: quiz.questions.filter((q) => q.difficulty === "MEDIUM" || !q.difficulty).length,
+    HARD: quiz.questions.filter((q) => q.difficulty === "HARD").length,
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6 animate-fadeIn">
@@ -61,16 +64,23 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
           {/* Difficulty Badge Distribution */}
           <div className="flex items-center gap-4 pt-2">
             <span className="text-xs font-bold text-slate-400">Độ khó câu hỏi:</span>
+
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                {easyCount} Dễ
-              </span>
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                {mediumCount} Trung bình
-              </span>
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                {hardCount} Khó
-              </span>
+              {
+                CONFIG_DIFFICULTY_LEVEL.map((item) => {
+                  const { label, value, color } = item ?? {};
+
+                  const count = countMap[value] ?? 0;
+
+                  return (
+                    <Badge
+                      key={value}
+                      label={`${count} ${label}`}
+                      className={color}
+                    />
+                  );
+                })
+              }
             </div>
           </div>
         </div>
@@ -101,7 +111,7 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
                 mode
               } = item ?? {};
               return (
-                <GameModeComponent
+                <GameModeBlock
                   key={item.id}
                   classNameWrapperContainer={classNameWrapperContainer}
                   classNameWrapperIcon={classNameWrapperIcon}
@@ -129,11 +139,10 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
             onClick={() =>
               onUpdateSettings({ ...settings, soundEnabled: !settings.soundEnabled })
             }
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border font-semibold transition-all ${
-              settings.soundEnabled
-                ? "bg-purple-950/60 border-purple-500/40 text-purple-300"
-                : "bg-slate-800/60 border-slate-700 text-slate-400"
-            }`}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border font-semibold transition-all ${settings.soundEnabled
+              ? "bg-purple-950/60 border-purple-500/40 text-purple-300"
+              : "bg-slate-800/60 border-slate-700 text-slate-400"
+              }`}
           >
             {settings.soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
             <span>Âm thanh Game</span>
@@ -143,11 +152,10 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
             onClick={() =>
               onUpdateSettings({ ...settings, bgMusicEnabled: !settings.bgMusicEnabled })
             }
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border font-semibold transition-all ${
-              settings.bgMusicEnabled
-                ? "bg-pink-950/60 border-pink-500/40 text-pink-300"
-                : "bg-slate-800/60 border-slate-700 text-slate-400"
-            }`}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border font-semibold transition-all ${settings.bgMusicEnabled
+              ? "bg-pink-950/60 border-pink-500/40 text-pink-300"
+              : "bg-slate-800/60 border-slate-700 text-slate-400"
+              }`}
           >
             <Music className="w-3.5 h-3.5" />
             <span>Nhạc nền Kahoot</span>

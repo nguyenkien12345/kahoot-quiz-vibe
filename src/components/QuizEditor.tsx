@@ -1,11 +1,10 @@
 import { ArrowLeft, Award, CheckCircle2, Clock, Download, Plus, Save, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { ComboboxOption, SearchableCombobox } from './ui/SearchableCombobox';
-
+import { ComboboxOption, SearchableCombobox } from '@/src/components/ui/SearchableCombobox';
+import { cn } from '@/src/lib/utils';
 import { DifficultyLevel, OptionId, OptionStyle, QuizData, QuizQuestion } from '@/src/types';
 import { formatJsonString } from '@/src/utils/jsonValidator';
-import { cn } from '@/src/lib/utils';
 
 const DIFFICULTY_OPTIONS: ComboboxOption<DifficultyLevel>[] = [
     { value: 'EASY', label: 'Dễ (EASY)' },
@@ -254,8 +253,8 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
 
                                 <div className="flex items-center gap-3">
                                     {/* Difficulty Picker */}
-                                    <div className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-950 px-2 py-0.5">
-                                        <Award className="ml-1 h-3.5 w-3.5 shrink-0 text-amber-400" />
+                                    <div className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-950 px-2.5 py-1">
+                                        <Award className="h-3.5 w-3.5 text-amber-400" />
                                         <SearchableCombobox<DifficultyLevel>
                                             options={DIFFICULTY_OPTIONS}
                                             value={currentQ.difficulty || 'MEDIUM'}

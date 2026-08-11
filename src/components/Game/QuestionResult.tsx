@@ -1,7 +1,7 @@
 import { ArrowRight, CheckCircle2, Flame, Lightbulb, XCircle, Zap } from 'lucide-react';
 import React, { useEffect } from 'react';
 
-import Button from '@/src/components/common/Button';
+import Button from '@/src/components/ui/Button';
 import { KAHOOT_OPTION_STYLES } from '@/src/constants';
 import { QuizQuestion, UserAnswer } from '@/src/types';
 import { sound } from '@/src/utils/audio';

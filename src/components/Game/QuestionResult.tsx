@@ -113,7 +113,7 @@ export const QuestionResult: React.FC<QuestionResultProps> = ({
 
             {/* Next Action Button */}
             <div className="flex justify-end pt-2">
-                <Button onClick={onNextQuestion} rightIcon={ArrowRight} classNameIcon="h-5 w-5">
+                <Button onClick={onNextQuestion} rightIcon={ArrowRight} classNameIcon="h-5 w-5" fullWidth>
                     {questionIndex + 1 < totalQuestions ? 'Câu Hỏi Tiếp Theo' : 'Xem Kết Quả Quiz'}
                 </Button>
             </div>

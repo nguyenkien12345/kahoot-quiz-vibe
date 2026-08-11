@@ -50,7 +50,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                     'inline-flex items-center justify-center font-sans transition-all active:scale-95 disabled:pointer-events-none disabled:opacity-50',
                     variantStyles[variant],
                     sizeStyles[size],
-                    fullWidth ? 'w-full' : '',
+                    fullWidth ? 'w-full sm:w-auto' : '',
                     className,
                 )}
                 {...props}

@@ -1,6 +1,6 @@
 import { LucideIcon, Play, Shield, Trophy, Users, Zap } from 'lucide-react';
 
-import { GameMode } from '../types';
+import { GameMode, OptionId, OptionStyle } from '@/src/types';
 
 export interface ConfigModeGame {
     id: number;
@@ -108,3 +108,10 @@ export const CONFIG_DIFFICULTY_LEVEL = [
         color: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     },
 ];
+
+export const KAHOOT_OPTION_STYLES: Record<OptionId, OptionStyle> = {
+    A: { symbol: '▲', bg: 'bg-[#E21B3C]', border: 'border-red-500', text: 'text-white' },
+    B: { symbol: '◆', bg: 'bg-[#1368CE]', border: 'border-blue-500', text: 'text-white' },
+    C: { symbol: '●', bg: 'bg-[#FFA602]', border: 'border-amber-500', text: 'text-white' },
+    D: { symbol: '■', bg: 'bg-[#26890C]', border: 'border-emerald-500', text: 'text-white' },
+};

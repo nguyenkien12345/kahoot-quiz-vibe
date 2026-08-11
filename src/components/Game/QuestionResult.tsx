@@ -1,128 +1,122 @@
-import React, { useEffect } from "react";
-import { CheckCircle2, XCircle, Clock, Flame, ArrowRight, Award, Lightbulb, Zap } from "lucide-react";
-import { QuizQuestion, OptionId, UserAnswer } from "../../types";
-import { sound } from "../../utils/audio";
+import { ArrowRight, CheckCircle2, Flame, Lightbulb, XCircle, Zap } from 'lucide-react';
+import React, { useEffect } from 'react';
+
+import Button from '@/src/components/common/Button';
+import { KAHOOT_OPTION_STYLES } from '@/src/constants';
+import { QuizQuestion, UserAnswer } from '@/src/types';
+import { sound } from '@/src/utils/audio';
 
 interface QuestionResultProps {
-  question: QuizQuestion;
-  userAnswer: UserAnswer;
-  questionIndex: number;
-  totalQuestions: number;
-  onNextQuestion: () => void;
-  soundEnabled: boolean;
+    question: QuizQuestion; // Thông tin câu hỏi vừa làm (bao gồm danh sách đáp án, đáp án đúng, lời giải thích)
+    userAnswer: UserAnswer; // Kết quả trả lời của người chơi (có đúng không, chọn đáp án nào, cộng bao nhiêu điểm, streak bao nhiêu)
+    questionIndex: number; // Thứ tự câu hỏi hiện tại (bắt đầu từ 0)
+    totalQuestions: number; // Tổng số câu hỏi trong bộ Quiz
+    onNextQuestion: () => void; // Hàm callback chạy khi người chơi bấm nút "Câu Hỏi Tiếp Theo"
+    soundEnabled: boolean; // Cấu hình bật/tắt âm thanh
 }
 
 export const QuestionResult: React.FC<QuestionResultProps> = ({
-  question,
-  userAnswer,
-  questionIndex,
-  totalQuestions,
-  onNextQuestion,
-  soundEnabled
+    question,
+    userAnswer,
+    questionIndex,
+    totalQuestions,
+    onNextQuestion,
+    soundEnabled,
 }) => {
-  const isCorrect = userAnswer.isCorrect;
-  const isTimeOut = userAnswer.selectedOptionId === null;
-  const correctOpt = question.options.find((o) => o.id === question.correct_option_id);
+    const { isCorrect, selectedOptionId, pointsEarned, streakCount } = userAnswer ?? {};
 
-  useEffect(() => {
-    if (soundEnabled) {
-      if (isCorrect) {
-        sound.playCorrect();
-      } else {
-        sound.playWrong();
-      }
-    }
-  }, [isCorrect, soundEnabled]);
+    useEffect(() => {
+        if (soundEnabled) {
+            if (isCorrect) {
+                sound.playCorrect();
+            } else {
+                sound.playWrong();
+            }
+        }
+    }, [isCorrect, soundEnabled]);
 
-  const optionColors: Record<OptionId, { symbol: string; bg: string; border: string; text: string }> = {
-    A: { symbol: "▲", bg: "bg-[#E21B3C]", border: "border-red-500", text: "text-white" },
-    B: { symbol: "◆", bg: "bg-[#1368CE]", border: "border-blue-500", text: "text-white" },
-    C: { symbol: "●", bg: "bg-[#FFA602]", border: "border-amber-500", text: "text-white" },
-    D: { symbol: "■", bg: "bg-[#26890C]", border: "border-emerald-500", text: "text-white" }
-  };
+    const correctOpt = question.options.find((o) => o.id === question.correct_option_id);
+    const correctStyle = correctOpt ? KAHOOT_OPTION_STYLES[correctOpt.id] : null;
 
-  return (
-    <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-6 animate-fadeIn">
-      {/* Result Status Banner */}
-      <div
-        className={`p-6 sm:p-8 rounded-3xl border-2 text-center space-y-3 shadow-2xl ${
-          isCorrect
-            ? "bg-emerald-950/80 border-emerald-500 text-emerald-200"
-            : "bg-rose-950/80 border-rose-500 text-rose-200"
-        }`}
-      >
-        <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-black/30 text-4xl">
-          {isCorrect ? (
-            <CheckCircle2 className="w-10 h-10 text-emerald-400" />
-          ) : (
-            <XCircle className="w-10 h-10 text-rose-400" />
-          )}
+    return (
+        <div className="animate-fadeIn mx-auto max-w-3xl space-y-6 p-4 sm:p-6">
+            {/* Result Status Banner */}
+            <div
+                className={`space-y-3 rounded-3xl border-2 p-6 text-center shadow-2xl sm:p-8 ${isCorrect ? 'border-emerald-500 bg-emerald-950/80 text-emerald-200' : 'border-rose-500 bg-rose-950/80 text-rose-200'}`}
+            >
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-black/30 text-4xl">
+                    {isCorrect ? (
+                        <CheckCircle2 className="h-10 w-10 text-emerald-400" />
+                    ) : (
+                        <XCircle className="h-10 w-10 text-rose-400" />
+                    )}
+                </div>
+
+                <h2 className="text-2xl font-black tracking-tight uppercase sm:text-4xl">
+                    {isCorrect
+                        ? 'Chính Xác!'
+                        : // Người chơi chưa kịp chọn đáp án nào thì đã hết thời gian
+                          selectedOptionId === null || selectedOptionId === undefined
+                          ? 'Hết Giờ!'
+                          : 'Chưa Đúng!'}
+                </h2>
+
+                {/* Hiển thị số điểm kiếm được */}
+                {isCorrect && (
+                    <div className="flex items-center justify-center gap-2 text-xl font-black text-amber-300">
+                        <Zap className="h-5 w-5 fill-current text-amber-400" />
+                        <span>+{pointsEarned.toLocaleString()} Điểm!</span>
+                    </div>
+                )}
+
+                {/* Huy hiệu Chuỗi câu đúng - Streak  */}
+                {streakCount >= 2 && isCorrect && (
+                    <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/20 px-3 py-1 text-xs font-extrabold text-amber-300">
+                        <Flame className="h-4 w-4 fill-amber-400" />
+                        <span>Chuỗi trả lời đúng {streakCount} câu liên tiếp!</span>
+                    </div>
+                )}
+            </div>
+
+            {/* Correct Answer Display Box */}
+            <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+                <span className="block text-xs font-bold tracking-wider text-slate-400 uppercase">
+                    Đáp án đúng chuẩn Kahoot:
+                </span>
+
+                {correctOpt && correctStyle && (
+                    <div
+                        className={`flex items-center gap-3 rounded-xl border p-4 text-base font-extrabold ${
+                            correctStyle.bg
+                        } ${correctStyle.text}`}
+                    >
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black/25 text-lg">
+                            {correctStyle.symbol}
+                        </span>
+                        <span className="flex-1">
+                            Lựa chọn {correctOpt.id}: {correctOpt.text}
+                        </span>
+                    </div>
+                )}
+
+                {/* Explanation Section */}
+                <div className="space-y-2 rounded-xl border border-slate-800/80 bg-slate-950 p-4">
+                    <div className="flex items-center gap-2 text-xs font-bold text-purple-400">
+                        <Lightbulb className="h-4 w-4 text-amber-400" />
+                        <span>Giải thích đáp án:</span>
+                    </div>
+                    <p className="text-xs leading-relaxed font-normal text-slate-300 sm:text-sm">
+                        {question.explanation}
+                    </p>
+                </div>
+            </div>
+
+            {/* Next Action Button */}
+            <div className="flex justify-end pt-2">
+                <Button onClick={onNextQuestion} rightIcon={ArrowRight} classNameIcon="h-5 w-5">
+                    {questionIndex + 1 < totalQuestions ? 'Câu Hỏi Tiếp Theo' : 'Xem Kết Quả Quiz'}
+                </Button>
+            </div>
         </div>
-
-        <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight">
-          {isCorrect ? "Chính Xác!" : isTimeOut ? "Hết Giờ!" : "Chưa Đúng!"}
-        </h2>
-
-        {isCorrect && (
-          <div className="flex items-center justify-center gap-2 font-black text-xl text-amber-300">
-            <Zap className="w-5 h-5 fill-current text-amber-400" />
-            <span>+{userAnswer.pointsEarned.toLocaleString()} Điểm!</span>
-          </div>
-        )}
-
-        {userAnswer.streakCount >= 2 && isCorrect && (
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-extrabold border border-amber-500/30">
-            <Flame className="w-4 h-4 fill-amber-400" />
-            <span>Chuỗi trả lời đúng {userAnswer.streakCount} câu liên tiếp!</span>
-          </div>
-        )}
-      </div>
-
-      {/* Correct Answer Display Box */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
-        <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-          Đáp án đúng chuẩn Kahoot:
-        </span>
-
-        {correctOpt && (
-          <div
-            className={`p-4 rounded-xl border flex items-center gap-3 font-extrabold text-base ${
-              optionColors[correctOpt.id].bg
-            } ${optionColors[correctOpt.id].text}`}
-          >
-            <span className="w-8 h-8 rounded-lg bg-black/25 flex items-center justify-center text-lg shrink-0">
-              {optionColors[correctOpt.id].symbol}
-            </span>
-            <span className="flex-1">
-              Lựa chọn {correctOpt.id}: {correctOpt.text}
-            </span>
-          </div>
-        )}
-
-        {/* Explanation Section */}
-        <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/80 space-y-2">
-          <div className="flex items-center gap-2 text-purple-400 font-bold text-xs">
-            <Lightbulb className="w-4 h-4 text-amber-400" />
-            <span>Giải thích đáp án:</span>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-            {question.explanation}
-          </p>
-        </div>
-      </div>
-
-      {/* Next Action Button */}
-      <div className="flex justify-end pt-2">
-        <button
-          onClick={onNextQuestion}
-          className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:to-pink-500 text-white shadow-xl shadow-purple-600/30 transition-all flex items-center justify-center gap-2 active:scale-95"
-        >
-          <span>
-            {questionIndex + 1 < totalQuestions ? "Câu Hỏi Tiếp Theo" : "Xem Kết Quả Quiz"}
-          </span>
-          <ArrowRight className="w-5 h-5" />
-        </button>
-      </div>
-    </div>
-  );
+    );
 };

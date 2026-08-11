@@ -1,5 +1,6 @@
-import { cn } from "@/src/lib/utils";
-import React from "react";
+import React from 'react';
+
+import { cn } from '@/src/lib/utils';
 
 interface StatCardProps {
     classNameWrapper?: string;
@@ -18,15 +19,22 @@ const StatCard: React.FC<StatCardProps> = ({
     classNamePoint,
     point,
     classNameConclusion,
-    conclusion
+    conclusion,
 }) => {
     return (
-        <div className={cn("bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center space-y-1", classNameWrapper)}>
-            <span className={cn("text-[10px] font-bold uppercase tracking-wider text-slate-400", classNameTitle)}>{title}</span>
-            <div className={cn("text-2xl font-black font-mono", classNamePoint)}>{point}</div>
-            <span className={cn("text-[11px] text-slate-500", classNameConclusion)}>{conclusion}</span>
+        <div
+            className={cn(
+                'space-y-1 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-center',
+                classNameWrapper,
+            )}
+        >
+            <span className={cn('text-[10px] font-bold tracking-wider text-slate-400 uppercase', classNameTitle)}>
+                {title}
+            </span>
+            <div className={cn('font-mono text-2xl font-black', classNamePoint)}>{point}</div>
+            <span className={cn('text-[11px] text-slate-500', classNameConclusion)}>{conclusion}</span>
         </div>
-    )
+    );
 };
 
 export default StatCard;

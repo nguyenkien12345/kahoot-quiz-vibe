@@ -1,6 +1,7 @@
-import { cn } from "@/src/lib/utils";
-import React from "react";
-import { LucideIcon } from "lucide-react";
+import React from 'react';
+import { LucideIcon } from 'lucide-react';
+
+import { cn } from '@/src/lib/utils';
 
 interface GameModeBlockProps {
     classNameWrapperContainer?: string;
@@ -37,68 +38,79 @@ const GameModeBlock: React.FC<GameModeBlockProps> = ({
     textAction,
     iconAction: IconAction,
     classNameIconAction,
-    onClick
+    onClick,
 }) => {
     return (
-        <div className={cn(
-            "group relative bg-slate-900 border-2 border-slate-800 rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:shadow-xl flex flex-col justify-between",
-            classNameWrapperContainer
-        )}
+        <div
+            className={cn(
+                'group relative flex cursor-pointer flex-col justify-between rounded-2xl border-2 border-slate-800 bg-slate-900 p-5 transition-all duration-300 hover:shadow-xl',
+                classNameWrapperContainer,
+            )}
             onClick={onClick}
         >
             <div className="space-y-2">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     {/* Render Icon */}
-                    {
-                        Icon && (
-                            <div className={cn("w-10 h-10 rounded-xl border flex items-center justify-center font-bold group-hover:scale-110 transition-transform", classNameWrapperIcon)}>
-                                <Icon className={cn("w-5 h-5", classNameIcon)} />
-                            </div>
-                        )
-                    }
+                    {Icon && (
+                        <div
+                            className={cn(
+                                'flex h-10 w-10 items-center justify-center rounded-xl border font-bold transition-transform group-hover:scale-110',
+                                classNameWrapperIcon,
+                            )}
+                        >
+                            <Icon className={cn('h-5 w-5', classNameIcon)} />
+                        </div>
+                    )}
 
                     {/* Render Text */}
-                    {
-                        text && (
-                            <span className={cn("text-[10px] uppercase font-black px-2 py-0.5 rounded-full border", classNameWrapperText)}>
-                                {text}
-                            </span>
-                        )
-                    }
+                    {text && (
+                        <span
+                            className={cn(
+                                'rounded-full border px-2 py-0.5 text-[10px] font-black uppercase',
+                                classNameWrapperText,
+                            )}
+                        >
+                            {text}
+                        </span>
+                    )}
                 </div>
 
                 {/* Content */}
                 {/* Title */}
-                <h4 className={cn("font-extrabold text-white text-base transition-colors", classNameWrapperTitle)}>
+                <h4 className={cn('text-base font-extrabold text-white transition-colors', classNameWrapperTitle)}>
                     {title}
                 </h4>
 
                 {/* Description */}
-                {
-                    description && (
-                        <p className={cn("text-xs text-slate-400 leading-relaxed", classNameWrapperDescription)}>
-                            {description}
-                        </p>
-                    )
-                }
+                {description && (
+                    <p className={cn('text-xs leading-relaxed text-slate-400', classNameWrapperDescription)}>
+                        {description}
+                    </p>
+                )}
             </div>
 
             {/* Actions */}
-            {
-                showActions && (
-                    <div className={cn("mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-bold", classNameWrapperActions)}>
-                        {textAction}
-                        {
-                            IconAction && (
-                                <IconAction className={cn("w-4 h-4 fill-current group-hover:translate-x-1 transition-transform", classNameIconAction)} />
-                            )
-                        }
-                    </div>
-                )
-            }
+            {showActions && (
+                <div
+                    className={cn(
+                        'mt-4 flex items-center justify-between border-t border-slate-800 pt-3 text-xs font-bold',
+                        classNameWrapperActions,
+                    )}
+                >
+                    {textAction}
+                    {IconAction && (
+                        <IconAction
+                            className={cn(
+                                'h-4 w-4 fill-current transition-transform group-hover:translate-x-1',
+                                classNameIconAction,
+                            )}
+                        />
+                    )}
+                </div>
+            )}
         </div>
-    )
-}
+    );
+};
 
 export default GameModeBlock;

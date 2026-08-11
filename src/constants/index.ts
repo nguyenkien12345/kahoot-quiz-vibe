@@ -1,4 +1,4 @@
-import { Play, Sparkles, Trophy, Users, Zap, Shield, HelpCircle, Layers, Settings, Music, Volume2, VolumeX, LucideIcon } from "lucide-react";
+import { LucideIcon, Play, Shield, Trophy, Users, Zap } from "lucide-react";
 import { GameMode } from "../types";
 
 export interface ConfigModeGame {
@@ -61,7 +61,7 @@ export const CONFIG_MODE_GAME: ConfigModeGame[] = [
         classNameWrapperContainer: "hover:border-amber-500/80 hover:shadow-amber-900/20",
         classNameWrapperIcon: "bg-amber-500/10 border-amber-500/30 text-amber-400",
         icon: Trophy,
-        classNameWrapperText: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
+        classNameWrapperText: "bg-amber-500/20 text-amber-300 border-amber-500/30",
         text: "Tốc độ",
         classNameWrapperTitle: "group-hover:text-amber-300",
         title: "Speed Run (Siêu Tốc)",
@@ -77,7 +77,7 @@ export const CONFIG_MODE_GAME: ConfigModeGame[] = [
         classNameWrapperContainer: "hover:border-emerald-500/80 hover:shadow-emerald-900/20",
         classNameWrapperIcon: "bg-emerald-500/10 border-emerald-500/30 text-emerald-400",
         icon: Shield,
-        classNameWrapperText: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
+        classNameWrapperText: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
         text: "Thư giãn",
         classNameWrapperTitle: "group-hover:text-emerald-300",
         title: "Chế Độ Luyện Tập (Không Áp Lực)",

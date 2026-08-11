@@ -57,7 +57,7 @@ export interface ValidationResult {
 }
 
 export interface OptionStyle {
-    symbol: string;
+    symbol?: string;
     bg: string;
     border: string;
     text: string;

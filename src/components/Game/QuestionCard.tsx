@@ -37,7 +37,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         options: questionOptions,
     } = question ?? {};
 
+    // Thời gian gốc
     const baseTimeSec = time_limit_sec || 20;
+    // Tính toán tổng số giây mà người chơi có để trả lời câu hỏi hiện tại
     const totalTimeSec =
         gameMode === 'SPEED_RUN'
             ? Math.max(8, Math.round(baseTimeSec * 0.5)) // Speed Run: Giảm 50% thời gian gốc (thời gian câu hỏi không bao giờ được thấp hơn 8 giây (để người chơi kịp đọc câu hỏi và bấm đáp án)))
@@ -111,6 +113,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     // performance.now(): Mốc thời gian hiện tại khi đồng hồ hết giờ
 
     // Hàm xử lý khi hết giờ (Timeout)
+    // - Tính chính xác người chơi đã tiêu tốn bao nhiêu giây
+    // - Báo về cho component cha (App.tsx) biết: "Người chơi đã quá giờ và không chọn đáp án nào (null)"
     const handleTimeOut = useCallback(() => {
         // (hiện_tại - bắt_đầu) / 1000 => Lấy mốc hiện tại - mốc bắt đầu = khoảng thời gian người chơi đã trôi qua tính bằng mili-giây (ms) (Chia cho 1000 để quy đổi từ mili-giây sang giây (s))
         // Ví dụ: Bắt đầu lúc 5000ms, hết giờ lúc 25045ms => (25045 - 5000) / 1000 = 20.045s
@@ -156,7 +160,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [questionId, gameMode, handleTimeOut]);
+    }, [gameMode, handleTimeOut]);
 
     const pickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -168,7 +172,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             // 2. Dừng đồng hồ đếm ngược ngay lập tức
             if (timerRef.current) clearInterval(timerRef.current);
 
-            // 3. Lưu đáp án người chơi chọn vào State
+            // 3. Lưu đáp án người chơi chọn vào State. Vô hiệu hóa (disabled) 3 nút còn lại.
             setSelectedOpt(optId);
 
             // 4. Tính chính xác số giây người chơi đã suy nghĩ đến lúc bấm nút
@@ -191,10 +195,11 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         };
     }, []);
 
+    // - 2 dòng code này dùng để tính toán độ dài vệt viền của vòng tròn đếm ngược đồng hồ SVG (nằm ở phía trên thẻ câu hỏi), giúp vòng tròn viền rút ngắn dần theo chiều kim đồng hồ khi thời gian trôi qua
     // - 283 chính là chiều dài của toàn bộ vòng viền hình tròn khi còn đầy 100% thời gian
     // - timeRatio: Tỷ lệ phần trăm thời gian còn lại (nhận giá trị từ 0.0 đến 1.0)
     // - Nếu ở chế độ Luyện tập (PRACTICE) -> timeRatio = 1 (100% thời gian, vòng tròn luôn đầy). Các chế độ khác thì lấy Thời gian còn lại \ Tổng thời gian
-    // + sVí dụ với câu hỏi 20 giây:
+    // + Ví dụ với câu hỏi 20 giây:
     // - Lúc mới vào làm câu hỏi (timeLeft = 20s): 20 / 20 = 1.0 (Còn 100% thời gian)
     // - Khi trôi qua một nửa (timeLeft = 10s): 10 / 20 = 0.5 (Còn 50% thời gian)
     // - Khi chuẩn bị hết giờ (timeLeft = 2s): 2 / 20 = 0.1 (Còn 10% thời gian)

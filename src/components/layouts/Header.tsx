@@ -1,7 +1,7 @@
+import { Edit3, FileJson, Play, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import React from 'react';
-import { Sparkles, FileJson, Volume2, VolumeX, Edit3, Play } from 'lucide-react';
 
-import { QuizData, ViewMode } from '../types';
+import { QuizData, ViewMode } from '@/src/types';
 
 interface HeaderProps {
     currentQuiz: QuizData;
@@ -32,16 +32,16 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={onResetGame}
                     className="group flex shrink-0 cursor-pointer items-center gap-3 select-none"
                 >
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-amber-400 p-0.5 shadow-lg shadow-purple-500/20 transition-transform duration-200 group-hover:scale-105">
-                        <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-slate-950 bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-xl font-black text-transparent">
+                    <div className="h-10 w-10 rounded-xl bg-linear-to-tr from-purple-600 via-pink-500 to-amber-400 p-0.5 shadow-lg shadow-purple-500/20 transition-transform duration-200 group-hover:scale-105">
+                        <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-slate-950 bg-linear-to-r from-purple-400 to-pink-300 bg-clip-text text-xl font-black text-transparent">
                             K!
                         </div>
                     </div>
                     <div>
-                        <div className="flex items-center gap-1.5 bg-gradient-to-r from-purple-300 via-pink-200 to-amber-200 bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
+                        <div className="flex items-center gap-1.5 bg-linear-to-r from-purple-300 via-pink-200 to-amber-200 bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
                             Kahoot! Quiz Master
                         </div>
-                        <p className="max-w-[180px] truncate text-[10px] font-medium text-purple-300/70 sm:max-w-xs">
+                        <p className="max-w-45 truncate text-[10px] font-medium text-purple-300/70 sm:max-w-xs">
                             {currentQuiz.title}
                         </p>
                     </div>
@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {/* AI Creator */}
                     <button
                         onClick={onOpenAiModal}
-                        className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-2 text-xs font-bold text-white shadow-md shadow-purple-600/30 transition-all duration-200 hover:from-purple-500 hover:to-pink-500 active:scale-95"
+                        className="flex items-center gap-1.5 rounded-xl bg-linear-to-r from-purple-600 to-pink-600 px-3 py-2 text-xs font-bold text-white shadow-md shadow-purple-600/30 transition-all duration-200 hover:from-purple-500 hover:to-pink-500 active:scale-95"
                     >
                         <Sparkles className="h-3.5 w-3.5 animate-pulse text-amber-300" />
                         <span className="hidden sm:inline">Tạo bằng</span> AI

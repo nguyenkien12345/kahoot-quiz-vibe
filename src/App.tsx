@@ -5,7 +5,7 @@ import { GameHostView } from './components/Game/GameHostView';
 import { GameSummary } from './components/Game/GameSummary';
 import { QuestionCard } from './components/Game/QuestionCard';
 import { QuestionResult } from './components/Game/QuestionResult';
-import { Header } from './components/Header';
+import { Header } from './components/layouts/Header';
 import { JsonImportModal } from './components/JsonImportModal';
 import { QuizEditor } from './components/QuizEditor';
 import { SAMPLE_QUIZZES } from './constants/samples';

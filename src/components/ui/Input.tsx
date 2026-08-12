@@ -14,6 +14,10 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
     iconClassName?: string;
     errorClassName?: string;
     helperClassName?: string;
+    prefixText?: string;
+    suffixText?: string;
+    prefixClassName?: string;
+    suffixClassName?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -29,6 +33,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             iconClassName,
             errorClassName,
             helperClassName,
+            prefixText,
+            suffixText,
+            prefixClassName,
+            suffixClassName,
             className,
             disabled,
             id,
@@ -54,10 +62,16 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 )}
 
                 <div className="relative flex items-center">
-                    {LeftIcon && (
+                    {LeftIcon && !prefixText && (
                         <LeftIcon
                             className={cn('pointer-events-none absolute left-3 h-4 w-4 text-slate-500', iconClassName)}
                         />
+                    )}
+
+                    {prefixText && !LeftIcon && (
+                        <span className={cn('absolute left-3 text-[11px] font-medium text-slate-500', prefixClassName)}>
+                            {prefixText}
+                        </span>
                     )}
 
                     <input
@@ -66,18 +80,26 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                         disabled={disabled}
                         className={cn(
                             'w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-sm font-bold text-white transition-colors focus:border-purple-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
-                            LeftIcon && 'pl-9',
-                            RightIcon && 'pr-9',
+                            (LeftIcon || prefixText) && 'pl-9',
+                            (RightIcon || suffixText) && 'pr-9',
                             error && 'border-rose-500 focus:border-rose-500',
                             className,
                         )}
                         {...props}
                     />
 
-                    {RightIcon && (
+                    {RightIcon && !suffixText && (
                         <RightIcon
                             className={cn('pointer-events-none absolute right-3 h-4 w-4 text-slate-500', iconClassName)}
                         />
+                    )}
+
+                    {suffixText && !RightIcon && (
+                        <span
+                            className={cn('absolute right-3 text-[11px] font-medium text-slate-500', suffixClassName)}
+                        >
+                            {suffixText}
+                        </span>
                     )}
                 </div>
 

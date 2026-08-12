@@ -1,8 +1,8 @@
 import { Edit3, FileJson, Play, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import React from 'react';
 
-import Button from '../ui/Button';
-
+import Button from '@/src/components/ui/Button';
+import { cn } from '@/src/lib/utils';
 import { QuizData, ViewMode } from '@/src/types';
 
 interface HeaderProps {
@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
                         size="icon"
                         title={soundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh'}
                         onClick={onToggleSound}
-                        className="hidden md:flex"
+                        className={cn(soundEnabled ? 'text-purple-300' : 'text-slate-400')}
                     >
                         {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
                     </Button>
@@ -71,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
                         onClick={onOpenEditor}
                         className="hidden md:flex"
                     >
-                        <span className="hidden sm:inline">Chỉnh sửa Quiz</span> AI
+                        Chỉnh sửa Quiz
                     </Button>
 
                     {/* AI Creator */}
@@ -81,7 +81,6 @@ export const Header: React.FC<HeaderProps> = ({
                         leftIcon={Sparkles}
                         classNameIcon="animate-pulse text-amber-300"
                         onClick={onOpenAiModal}
-                        className="text-purple-200"
                     >
                         <span className="hidden sm:inline">Tạo bằng</span> AI
                     </Button>

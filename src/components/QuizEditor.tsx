@@ -1,5 +1,5 @@
 import { ArrowLeft, Award, CheckCircle2, Clock, Download, Plus, Save, Trash2 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { ComboboxOption, SearchableCombobox } from '@/src/components/ui/SearchableCombobox';
 import { cn } from '@/src/lib/utils';
@@ -27,45 +27,73 @@ interface QuizEditorProps {
 
 export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, onCancel }) => {
     const [data, setData] = useState<QuizData>(JSON.parse(JSON.stringify(quizData)));
+
+    // Lưu vị trí của câu hỏi đang được mở
     const [activeQuestionIdx, setActiveQuestionIdx] = useState<number>(0);
     const [notification, setNotification] = useState<string | null>(null);
 
-    const handleTitleChange = (val: string) => {
+    // Hàm cập nhật tiêu đề bộ Quiz
+    const handleTitleChange = useCallback((val: string) => {
         setData((prev) => ({ ...prev, title: val }));
-    };
+    }, []);
 
-    const handleSummaryChange = (val: string) => {
+    // Hàm cập nhật phần tóm tắt bộ Quiz
+    const handleSummaryChange = useCallback((val: string) => {
         setData((prev) => ({ ...prev, summary: val }));
-    };
+    }, []);
 
-    const currentQ = data.questions[activeQuestionIdx];
+    const currentQuestion = data.questions[activeQuestionIdx];
 
-    const updateCurrentQuestion = (field: keyof QuizQuestion, val: unknown) => {
-        if (!currentQ) return;
-        setData((prev) => {
-            const nextQList = [...prev.questions];
-            nextQList[activeQuestionIdx] = {
-                ...nextQList[activeQuestionIdx],
-                [field]: val,
-            };
-            return { ...prev, questions: nextQList };
-        });
-    };
+    // Hàm cập nhật bất kỳ thuộc tính nào (field) của câu hỏi đang được mở với giá trị mới (val)
+    const updateCurrentQuestion = useCallback(
+        (field: keyof QuizQuestion, val: unknown) => {
+            if (!currentQuestion) return;
 
-    const updateOptionText = (optId: OptionId, text: string) => {
-        if (!currentQ) return;
-        setData((prev) => {
-            const nextQList = [...prev.questions];
-            const q = nextQList[activeQuestionIdx];
-            const nextOpts = q.options.map((opt) => (opt.id === optId ? { ...opt, text } : opt));
-            nextQList[activeQuestionIdx] = { ...q, options: nextOpts };
-            return { ...prev, questions: nextQList };
-        });
-    };
+            setData((prev) => {
+                // Tạo một mảng mới sao chép tất cả các phần tử từ mảng prev.questions
+                const nextQList = [...prev.questions];
 
-    const addNewQuestion = () => {
+                // nextQList[activeQuestionIdx]: Truy cập đến câu hỏi tại vị trí đang chọn
+                // { ...nextQList[activeQuestionIdx] }: Tạo một object câu hỏi mới bằng cách sao chép lại toàn bộ thông tin cũ của câu hỏi đó (id, question, options, explanation,...)
+                // [field]: val: Tùy thuộc vào tham số field truyền vào là gì, nó sẽ ghi đè (override) đúng thuộc tính đó bằng giá trị val
+                nextQList[activeQuestionIdx] = {
+                    ...nextQList[activeQuestionIdx],
+                    [field]: val,
+                };
+
+                // ...prev: Giữ nguyên các thông tin chung của Quiz (title, summary)
+                // questions: nextQList: Thay mảng questions cũ bằng mảng nextQList mới vừa được cập nhật câu hỏi ở bước trên
+                return { ...prev, questions: nextQList };
+            });
+        },
+        [activeQuestionIdx, currentQuestion],
+    );
+
+    // Hàm cập nhật nội dung 1 lựa chọn A, B, C hoặc D
+    const updateOptionText = useCallback(
+        (optId: OptionId, text: string) => {
+            if (!currentQuestion) return;
+
+            // Duyệt qua mảng options của câu hỏi hiện tại, tìm option có id match với optId và thay đổi field `text`
+            setData((prev) => {
+                const nextQList = [...prev.questions];
+
+                const q = nextQList[activeQuestionIdx];
+
+                const nextOpts = q.options.map((opt) => (opt.id === optId ? { ...opt, text } : opt));
+
+                nextQList[activeQuestionIdx] = { ...q, options: nextOpts };
+
+                return { ...prev, questions: nextQList };
+            });
+        },
+        [activeQuestionIdx, currentQuestion],
+    );
+
+    const addNewQuestion = useCallback(() => {
         const newId = data.questions.length + 1;
-        const newQ: QuizQuestion = {
+
+        const newQuestion: QuizQuestion = {
             id: newId,
             question: `Câu hỏi mới số ${newId}`,
             options: [
@@ -83,31 +111,53 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
 
         setData((prev) => ({
             ...prev,
-            questions: [...prev.questions, newQ],
+            questions: [...prev.questions, newQuestion],
         }));
-        setActiveQuestionIdx(data.questions.length);
-    };
 
-    const removeQuestion = (idx: number) => {
-        if (data.questions.length <= 1) {
-            alert('Bộ Quiz phải chứa ít nhất 1 câu hỏi!');
-            return;
-        }
-        const updated = data.questions.filter((_, i) => i !== idx);
-        // re-index
-        const reindexed = updated.map((q, i) => ({ ...q, id: i + 1 }));
-        setData((prev) => ({ ...prev, questions: reindexed }));
-        setActiveQuestionIdx(Math.max(0, idx - 1));
-    };
+        setActiveQuestionIdx(data.questions.length);
+    }, [data.questions.length]);
+
+    const removeQuestion = useCallback(
+        (idx: number) => {
+            if (data.questions.length <= 1) {
+                alert('Bộ Quiz phải chứa ít nhất 1 câu hỏi!');
+                return;
+            }
+
+            const updatedList = data.questions.filter((_, i) => i !== idx);
+
+            // re-index
+            // Sau khi xoá câu hỏi tại vị trí idx, hàm tự động đánh lại số ID (re-index) từ 1 đến N để đảm bảo tính nhất quán dữ liệu
+            const reindexed = updatedList.map((question, i) => ({ ...question, id: i + 1 }));
+            setData((prev) => ({ ...prev, questions: reindexed }));
+
+            // Khi bạn xóa câu hỏi ở vị trí idx, việc tự động lùi lại 1 vị trí (idx - 1) giúp giao diện tự chuyển sự chú ý (focus) sang câu hỏi ngay phía trước nó
+            // Đồng thời đảm bảo chỉ số index không bị âm (< 0)
+            setActiveQuestionIdx(Math.max(0, idx - 1));
+        },
+        [data.questions],
+    );
 
     const downloadJson = () => {
         const jsonStr = formatJsonString(data);
+
+        // Tạo một đối tượng Blob (Binary Large Object - Đối tượng lưu trữ dữ liệu nhị phân) từ chuỗi jsonStr
+        // { type: 'application/json' }: Đánh dấu kiểu MIME của tệp tin là tệp dữ liệu JSON để hệ điều hành và trình duyệt nhận diện đúng
         const blob = new Blob([jsonStr], { type: 'application/json' });
+
         const url = URL.createObjectURL(blob);
+
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${data.title.toLowerCase().replace(/[^a-z0-0]/g, '_') || 'quiz'}.json`;
+        a.download = `${
+            data.title
+                .toLowerCase()
+                .trim()
+                // Tìm tất cả ký tự không phải là chữ cái tiếng Anh (a-z) hoặc chữ số (0-9) và thay bằng dấu gạch dưới _
+                .replace(/[^a-z0-0]/g, '_') || 'quiz'
+        }.json`;
         a.click();
+
         URL.revokeObjectURL(url);
     };
 
@@ -132,7 +182,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                 <div className="flex items-center gap-3">
                     <button
                         onClick={downloadJson}
-                        className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-200 transition-all hover:bg-slate-700"
+                        className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-5 py-2 text-xs font-semibold text-slate-200 transition-all hover:bg-slate-700"
                     >
                         <Download className="h-4 w-4 text-purple-400" />
                         <span>Tải tệp JSON</span>
@@ -241,7 +291,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
 
                 {/* Right Area: Question Editor */}
                 <div className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-5 lg:col-span-8">
-                    {currentQ ? (
+                    {currentQuestion ? (
                         <>
                             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                                 <h3 className="flex items-center gap-2 text-base font-bold text-white">
@@ -257,7 +307,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                         <Award className="h-3.5 w-3.5 text-amber-400" />
                                         <SearchableCombobox<DifficultyLevel>
                                             options={DIFFICULTY_OPTIONS}
-                                            value={currentQ.difficulty || 'MEDIUM'}
+                                            value={currentQuestion.difficulty || 'MEDIUM'}
                                             onChange={(val) => updateCurrentQuestion('difficulty', val)}
                                             showSearch={true}
                                         />
@@ -270,7 +320,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                             type="number"
                                             min={10}
                                             max={60}
-                                            value={currentQ.time_limit_sec || 20}
+                                            value={currentQuestion.time_limit_sec || 20}
                                             onChange={(e) =>
                                                 updateCurrentQuestion('time_limit_sec', parseInt(e.target.value) || 20)
                                             }
@@ -287,7 +337,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                     Nội dung câu hỏi:
                                 </label>
                                 <textarea
-                                    value={currentQ.question}
+                                    value={currentQuestion.question}
                                     onChange={(e) => updateCurrentQuestion('question', e.target.value)}
                                     rows={2}
                                     className="w-full resize-none rounded-xl border border-slate-800 bg-slate-950 p-3 text-sm font-medium text-white focus:border-purple-500 focus:outline-none"
@@ -300,8 +350,8 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                     4 Lựa chọn trả lời & Đáp án đúng:
                                 </label>
                                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                    {currentQ.options.map((opt) => {
-                                        const isCorrect = currentQ.correct_option_id === opt.id;
+                                    {currentQuestion.options.map((opt) => {
+                                        const isCorrect = currentQuestion.correct_option_id === opt.id;
                                         const style = optionColors[opt.id];
 
                                         return (
@@ -350,7 +400,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                     Giải thích đáp án (Hiển thị sau khi người chơi trả lời):
                                 </label>
                                 <textarea
-                                    value={currentQ.explanation}
+                                    value={currentQuestion.explanation}
                                     onChange={(e) => updateCurrentQuestion('explanation', e.target.value)}
                                     rows={2}
                                     className="w-full resize-none rounded-xl border border-slate-800 bg-slate-950 p-3 text-xs text-slate-200 focus:border-purple-500 focus:outline-none"
@@ -364,7 +414,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                 </label>
                                 <input
                                     type="text"
-                                    value={currentQ.hint || ''}
+                                    value={currentQuestion.hint || ''}
                                     onChange={(e) => updateCurrentQuestion('hint', e.target.value)}
                                     placeholder="Gợi ý ngắn để người chơi dùng nút trợ giúp..."
                                     className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-300 focus:border-purple-500 focus:outline-none"

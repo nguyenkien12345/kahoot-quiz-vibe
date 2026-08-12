@@ -316,7 +316,6 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                         }
                                         leftIcon={Clock}
                                         iconClassName="h-3.5 w-3.5 text-blue-400"
-                                        className="text-slate-300"
                                         suffixText="giây"
                                     />
                                 </div>
@@ -404,7 +403,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                 label="Gợi ý câu hỏi (Tùy chọn):"
                                 placeholder="Gợi ý ngắn để người chơi dùng nút trợ giúp..."
                                 value={currentQuestion.hint || ''}
-                                onChange={(e) => handleTitleChange(e.target.value)}
+                                onChange={(e) => updateCurrentQuestion('hint', e.target.value)}
                                 className="text-slate-300"
                             />
                         </>

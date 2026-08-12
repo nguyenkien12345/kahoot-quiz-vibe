@@ -14,6 +14,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     isLoading?: boolean;
     fullWidth?: boolean;
     classNameIcon?: string;
+    classNameChildren?: string;
 }
 
 // bg-linear-to-r: Tạo hình nền chuyển màu dạng tuyến tính (linear gradient) theo hướng từ trái sang phải (to right)
@@ -51,6 +52,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             isLoading = false,
             fullWidth = false,
             classNameIcon,
+            classNameChildren,
             className,
             disabled,
             ...props
@@ -76,7 +78,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                     LeftIcon && <LeftIcon className={cn('h-4 w-4 shrink-0', classNameIcon)} />
                 )}
 
-                {children && <span>{children}</span>}
+                {children && <span className={cn(classNameChildren)}>{children}</span>}
 
                 {!isLoading && RightIcon && <RightIcon className={cn('h-4 w-4 shrink-0', classNameIcon)} />}
             </button>

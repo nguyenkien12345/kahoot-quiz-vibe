@@ -1,8 +1,8 @@
 import { ArrowLeft, Award, CheckCircle2, Clock, Download, Plus, Save, Trash2 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 
-import Button from './ui/Button';
-
+import Button from '@/src/components/ui/Button';
+import Input from '@/src/components/ui/Input';
 import { ComboboxOption, SearchableCombobox } from '@/src/components/ui/SearchableCombobox';
 import { cn } from '@/src/lib/utils';
 import { DifficultyLevel, OptionId, OptionStyle, QuizData, QuizQuestion } from '@/src/types';
@@ -211,17 +211,12 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                             Thông Tin Tổng Quan Quiz
                         </h4>
 
-                        <div>
-                            <label className="mb-1 block text-[11px] font-semibold text-slate-400">
-                                Tiêu đề sản phẩm / bài viết:
-                            </label>
-                            <input
-                                type="text"
-                                value={data.title}
-                                onChange={(e) => handleTitleChange(e.target.value)}
-                                className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs font-bold text-white focus:border-purple-500 focus:outline-none"
-                            />
-                        </div>
+                        <Input
+                            type="text"
+                            label="Tiêu đề sản phẩm / bài viết:"
+                            value={data.title}
+                            onChange={(e) => handleTitleChange(e.target.value)}
+                        />
 
                         <div>
                             <label className="mb-1 block text-[11px] font-semibold text-slate-400">
@@ -311,20 +306,19 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                     </div>
 
                                     {/* Time Limit */}
-                                    <div className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-950 px-2.5 py-1">
-                                        <Clock className="h-3.5 w-3.5 text-blue-400" />
-                                        <input
-                                            type="number"
-                                            min={10}
-                                            max={60}
-                                            value={currentQuestion.time_limit_sec || 20}
-                                            onChange={(e) =>
-                                                updateCurrentQuestion('time_limit_sec', parseInt(e.target.value) || 20)
-                                            }
-                                            className="w-10 bg-transparent text-center text-xs font-bold text-white focus:outline-none"
-                                        />
-                                        <span className="text-[11px] font-medium text-slate-400">giây</span>
-                                    </div>
+                                    <Input
+                                        type="number"
+                                        min={10}
+                                        max={60}
+                                        value={currentQuestion.time_limit_sec || 20}
+                                        onChange={(e) =>
+                                            updateCurrentQuestion('time_limit_sec', parseInt(e.target.value) || 20)
+                                        }
+                                        leftIcon={Clock}
+                                        iconClassName="h-3.5 w-3.5 text-blue-400"
+                                        className="text-slate-300"
+                                        suffixText="giây"
+                                    />
                                 </div>
                             </div>
 
@@ -379,11 +373,11 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                                         {isCorrect ? '✓ Đáp án đúng' : 'Đánh dấu đúng'}
                                                     </button>
                                                 </div>
-                                                <input
+                                                <Input
                                                     type="text"
                                                     value={opt.text}
                                                     onChange={(e) => updateOptionText(opt.id, e.target.value)}
-                                                    className="w-full rounded-lg border border-slate-800 bg-slate-950/80 px-2.5 py-1.5 text-xs text-white focus:border-purple-500 focus:outline-none"
+                                                    className="rounded-lg bg-slate-950/80 px-2.5 py-1.5 text-xs"
                                                 />
                                             </div>
                                         );
@@ -405,18 +399,14 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                             </div>
 
                             {/* Hint */}
-                            <div>
-                                <label className="mb-1.5 block text-xs font-bold text-slate-300">
-                                    Gợi ý câu hỏi (Tùy chọn):
-                                </label>
-                                <input
-                                    type="text"
-                                    value={currentQuestion.hint || ''}
-                                    onChange={(e) => updateCurrentQuestion('hint', e.target.value)}
-                                    placeholder="Gợi ý ngắn để người chơi dùng nút trợ giúp..."
-                                    className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-300 focus:border-purple-500 focus:outline-none"
-                                />
-                            </div>
+                            <Input
+                                type="text"
+                                label="Gợi ý câu hỏi (Tùy chọn):"
+                                placeholder="Gợi ý ngắn để người chơi dùng nút trợ giúp..."
+                                value={currentQuestion.hint || ''}
+                                onChange={(e) => handleTitleChange(e.target.value)}
+                                className="text-slate-300"
+                            />
                         </>
                     ) : (
                         <div className="py-12 text-center text-sm text-slate-500">

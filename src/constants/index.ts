@@ -110,8 +110,36 @@ export const CONFIG_DIFFICULTY_LEVEL = [
 ];
 
 export const KAHOOT_OPTION_STYLES: Record<OptionId, OptionStyle> = {
-    A: { symbol: '▲', bg: 'bg-[#E21B3C]', border: 'border-red-500', text: 'text-white' },
-    B: { symbol: '◆', bg: 'bg-[#1368CE]', border: 'border-blue-500', text: 'text-white' },
-    C: { symbol: '●', bg: 'bg-[#FFA602]', border: 'border-amber-500', text: 'text-white' },
-    D: { symbol: '■', bg: 'bg-[#26890C]', border: 'border-emerald-500', text: 'text-white' },
+    A: {
+        shape: 'Triangle',
+        symbol: '▲',
+        bg: 'bg-[#E21B3C]',
+        border: 'border-red-500',
+        text: 'text-white',
+        hoverBg: 'hover:bg-[#c41531]',
+    },
+    B: {
+        shape: 'Diamond',
+        symbol: '◆',
+        bg: 'bg-[#1368CE]',
+        border: 'border-blue-500',
+        text: 'text-white',
+        hoverBg: 'hover:bg-[#0f54a8]',
+    },
+    C: {
+        shape: 'Circle',
+        symbol: '●',
+        bg: 'bg-[#FFA602]',
+        border: 'border-amber-500',
+        text: 'text-white',
+        hoverBg: 'hover:bg-[#d98d02]',
+    },
+    D: {
+        shape: 'Square',
+        symbol: '■',
+        bg: 'bg-[#26890C]',
+        border: 'border-emerald-500',
+        text: 'text-white',
+        hoverBg: 'hover:bg-[#1f7009]',
+    },
 };

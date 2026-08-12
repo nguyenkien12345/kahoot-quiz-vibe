@@ -3,8 +3,8 @@ import React from 'react';
 
 import { cn } from '@/src/lib/utils';
 
-export type ButtonVariant = 'gradient';
-export type ButtonSize = 'lg';
+export type ButtonVariant = 'gradient' | 'secondary' | 'ghost';
+export type ButtonSize = 'lg' | 'md';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: ButtonVariant;
@@ -24,10 +24,14 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 const variantStyles: Record<ButtonVariant, string> = {
     gradient:
         'bg-linear-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:to-pink-500 text-white shadow-xl shadow-purple-600/30',
+    secondary:
+        'border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white hover:border-slate-600',
+    ghost: 'bg-transparent text-slate-400 hover:text-white hover:bg-slate-800/50',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
     lg: 'px-8 py-3.5 text-sm font-black tracking-wider uppercase rounded-2xl gap-2',
+    md: 'px-5 py-2 text-xs font-bold tracking-wider rounded-xl shadow-lg gap-2',
 };
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -68,7 +72,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
                 {children && <span>{children}</span>}
 
-                {!isLoading && RightIcon && <RightIcon className={(cn('h-4 w-4 shrink-0'), classNameIcon)} />}
+                {!isLoading && RightIcon && <RightIcon className={cn('h-4 w-4 shrink-0', classNameIcon)} />}
             </button>
         );
     },

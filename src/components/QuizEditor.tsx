@@ -1,6 +1,8 @@
 import { ArrowLeft, Award, CheckCircle2, Clock, Download, Plus, Save, Trash2 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 
+import Button from './ui/Button';
+
 import { ComboboxOption, SearchableCombobox } from '@/src/components/ui/SearchableCombobox';
 import { cn } from '@/src/lib/utils';
 import { DifficultyLevel, OptionId, OptionStyle, QuizData, QuizQuestion } from '@/src/types';
@@ -12,7 +14,7 @@ const DIFFICULTY_OPTIONS: ComboboxOption<DifficultyLevel>[] = [
     { value: 'HARD', label: 'Khó (HARD)' },
 ];
 
-const optionColors: Record<OptionId, OptionStyle> = {
+const OPTION_COLORS: Record<OptionId, OptionStyle> = {
     A: { bg: 'bg-rose-500/10', border: 'border-rose-500/40', text: 'text-rose-400' },
     B: { bg: 'bg-blue-500/10', border: 'border-blue-500/40', text: 'text-blue-400' },
     C: { bg: 'bg-amber-500/10', border: 'border-amber-500/40', text: 'text-amber-400' },
@@ -171,29 +173,24 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
         <div className="animate-fadeIn mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
             {/* Top Banner */}
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-xl">
-                <button
-                    onClick={onCancel}
-                    className="flex items-center gap-2 text-xs font-semibold text-slate-400 transition-colors hover:text-white"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                    <span>Quay lại Game</span>
-                </button>
+                <Button size="md" variant="gradient" onClick={onCancel} leftIcon={ArrowLeft} className="font-semibold">
+                    Quay lại Game
+                </Button>
 
                 <div className="flex items-center gap-3">
-                    <button
+                    <Button
+                        size="md"
+                        variant="secondary"
                         onClick={downloadJson}
-                        className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-5 py-2 text-xs font-semibold text-slate-200 transition-all hover:bg-slate-700"
+                        leftIcon={Download}
+                        classNameIcon="text-purple-400"
+                        className="font-semibold"
                     >
-                        <Download className="h-4 w-4 text-purple-400" />
-                        <span>Tải tệp JSON</span>
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        className="flex items-center gap-1.5 rounded-xl bg-linear-to-r from-purple-600 to-pink-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-purple-600/30 transition-all hover:from-purple-500 hover:to-pink-500"
-                    >
-                        <Save className="h-4 w-4" />
-                        <span>Lưu & Áp Dụng</span>
-                    </button>
+                        Tải tệp JSON
+                    </Button>
+                    <Button size="md" variant="gradient" onClick={handleSave} leftIcon={Save}>
+                        Lưu & Áp Dụng
+                    </Button>
                 </div>
             </div>
 
@@ -352,7 +349,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
                                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     {currentQuestion.options.map((opt) => {
                                         const isCorrect = currentQuestion.correct_option_id === opt.id;
-                                        const style = optionColors[opt.id];
+                                        const style = OPTION_COLORS[opt.id];
 
                                         return (
                                             <div

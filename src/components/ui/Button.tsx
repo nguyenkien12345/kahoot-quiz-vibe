@@ -16,6 +16,11 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     classNameIcon?: string;
 }
 
+// bg-linear-to-r: Tạo hình nền chuyển màu dạng tuyến tính (linear gradient) theo hướng từ trái sang phải (to right)
+// from-purple-600: Điểm màu bắt đầu (góc bên trái) là màu Tím đậm
+// via-pink-600: Điểm màu ở giữa dải gradient là màu Hồng đậm. Việc có via- giúp dải chuyển màu mượt mà qua 3 tông màu: Tím -> Hồng -> Vàng
+// to-amber-500: Điểm màu kết thúc (góc bên phải) là màu Vàng hổ phách / Cam vàng
+
 const variantStyles: Record<ButtonVariant, string> = {
     gradient:
         'bg-linear-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:to-pink-500 text-white shadow-xl shadow-purple-600/30',

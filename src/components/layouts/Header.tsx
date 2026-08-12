@@ -1,6 +1,8 @@
 import { Edit3, FileJson, Play, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import React from 'react';
 
+import Button from '../ui/Button';
+
 import { QuizData, ViewMode } from '@/src/types';
 
 interface HeaderProps {
@@ -50,58 +52,63 @@ export const Header: React.FC<HeaderProps> = ({
                 {/* Action Controls */}
                 <div className="flex items-center gap-2 sm:gap-3">
                     {/* Sound Toggle */}
-                    <button
-                        onClick={onToggleSound}
+                    <Button
+                        variant={soundEnabled ? 'purple' : 'secondary'}
+                        size="icon"
                         title={soundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh'}
-                        className={`rounded-xl border p-2 transition-all duration-200 ${
-                            soundEnabled
-                                ? 'border-purple-500/40 bg-purple-950/60 text-purple-300 hover:bg-purple-900/60'
-                                : 'border-slate-700/60 bg-slate-800/60 text-slate-400 hover:bg-slate-700/60'
-                        }`}
+                        onClick={onToggleSound}
+                        className="hidden md:flex"
                     >
                         {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-                    </button>
+                    </Button>
 
                     {/* Editor Button */}
-                    <button
+                    <Button
+                        variant={viewMode === 'EDITOR' ? 'amber' : 'secondary'}
+                        size="sm"
+                        leftIcon={Edit3}
+                        classNameIcon="text-amber-400"
                         onClick={onOpenEditor}
-                        className={`hidden items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 md:flex ${
-                            viewMode === 'EDITOR'
-                                ? 'border-amber-400/50 bg-amber-500/20 text-amber-300'
-                                : 'border-slate-700/60 bg-slate-800/60 text-slate-200 hover:bg-slate-700/60'
-                        }`}
+                        className="hidden md:flex"
                     >
-                        <Edit3 className="h-3.5 w-3.5 text-amber-400" />
-                        <span>Chỉnh sửa Quiz</span>
-                    </button>
+                        <span className="hidden sm:inline">Chỉnh sửa Quiz</span> AI
+                    </Button>
 
                     {/* AI Creator */}
-                    <button
+                    <Button
+                        variant="gradient"
+                        size="sm"
+                        leftIcon={Sparkles}
+                        classNameIcon="animate-pulse text-amber-300"
                         onClick={onOpenAiModal}
-                        className="flex items-center gap-1.5 rounded-xl bg-linear-to-r from-purple-600 to-pink-600 px-3 py-2 text-xs font-bold text-white shadow-md shadow-purple-600/30 transition-all duration-200 hover:from-purple-500 hover:to-pink-500 active:scale-95"
+                        className="text-purple-200"
                     >
-                        <Sparkles className="h-3.5 w-3.5 animate-pulse text-amber-300" />
                         <span className="hidden sm:inline">Tạo bằng</span> AI
-                    </button>
+                    </Button>
 
                     {/* JSON Import Button */}
-                    <button
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        leftIcon={FileJson}
+                        classNameIcon="text-purple-400"
                         onClick={onOpenJsonModal}
-                        className="flex items-center gap-1.5 rounded-xl border border-slate-700/80 bg-slate-800/80 px-3 py-2 text-xs font-semibold text-purple-200 transition-all duration-200 hover:border-purple-500/50 hover:bg-purple-950/50"
+                        className="text-purple-200"
                     >
-                        <FileJson className="h-3.5 w-3.5 text-purple-400" />
                         <span className="hidden sm:inline">Nhập</span> JSON
-                    </button>
+                    </Button>
 
                     {/* Home / Lobby button */}
                     {viewMode !== 'LOBBY' && (
-                        <button
+                        <Button
+                            variant="emerald"
+                            size="sm"
+                            leftIcon={Play}
+                            classNameIcon="fill-current"
                             onClick={onResetGame}
-                            className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-600/20 px-3 py-2 text-xs font-semibold text-emerald-300 transition-all duration-200 hover:bg-emerald-600/30"
                         >
-                            <Play className="h-3.5 w-3.5 fill-current" />
-                            <span>Chơi Game</span>
-                        </button>
+                            Chơi Game
+                        </Button>
                     )}
                 </div>
             </div>

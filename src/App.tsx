@@ -149,6 +149,7 @@ export default function App() {
 
                 {viewMode === 'PLAYING' && (
                     <QuestionCard
+                        key={quizData.questions[currentQuestionIdx].id}
                         question={quizData.questions[currentQuestionIdx]}
                         questionIndex={currentQuestionIdx}
                         totalQuestions={quizData.questions.length}

@@ -173,7 +173,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({ quizData, onSaveQuiz, on
         <div className="animate-fadeIn mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
             {/* Top Banner */}
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-xl">
-                <Button size="md" variant="gradient" onClick={onCancel} leftIcon={ArrowLeft} className="font-semibold">
+                <Button size="md" variant="ghost" onClick={onCancel} leftIcon={ArrowLeft} className="font-semibold">
                     Quay lại Game
                 </Button>
 

@@ -64,4 +64,5 @@ export interface OptionStyle {
     text: string;
     note?: string;
     isShow?: boolean;
+    hoverBg?: string;
 }
